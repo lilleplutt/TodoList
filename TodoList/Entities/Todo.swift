@@ -1,7 +1,9 @@
-//
-//  Todo.swift
-//  TodoList
-//
-//  Created by Alina on 11/03/2026.
-//
+import Foundation
 
+struct Todo: Codable {
+    let id: Int
+    var title: String
+    var description: String
+    var isCompleted: Bool
+    var createdAt: Date
+}

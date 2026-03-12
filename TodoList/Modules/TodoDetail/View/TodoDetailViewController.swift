@@ -46,6 +46,11 @@ final class TodoDetailViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBar()
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+        
         presenter?.viewDidLoad()
     }
     
@@ -70,7 +75,7 @@ final class TodoDetailViewController: UIViewController {
             descriptionTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 24),
             descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            descriptionTextView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -16),
+            descriptionTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             
             placeholderLabel.topAnchor.constraint(equalTo: descriptionTextView.topAnchor, constant: 8),
             placeholderLabel.leadingAnchor.constraint(equalTo: descriptionTextView.leadingAnchor, constant: 8)
@@ -115,6 +120,10 @@ final class TodoDetailViewController: UIViewController {
     
     @objc private func didTapCancel() {
         presenter?.didTapCancel()
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 

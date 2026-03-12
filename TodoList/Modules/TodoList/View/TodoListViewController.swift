@@ -27,12 +27,6 @@ final class TodoListViewController: UIViewController {
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.searchBarStyle = .minimal
         searchBar.placeholder = "Search"
-        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
-            let micImageView = UIImageView(image: UIImage(systemName: "mic.fill"))
-            micImageView.tintColor = .systemGray2
-            textField.rightView = micImageView
-            textField.rightViewMode = .always
-        }
         return searchBar
     }()
     
@@ -107,11 +101,11 @@ final class TodoListViewController: UIViewController {
         tableView.register(TodoCell.self, forCellReuseIdentifier: TodoCell.identifier)
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
             
-            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
+            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
             
@@ -149,6 +143,15 @@ final class TodoListViewController: UIViewController {
             navigationBar.standardAppearance = appearance
             navigationBar.scrollEdgeAppearance = appearance
             navigationBar.tintColor = .systemYellow
+        }
+        
+        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
+            let micImageView = UIImageView(image: UIImage(systemName: "mic.fill"))
+            micImageView.tintColor = .systemGray2
+            micImageView.contentMode = .scaleAspectFit
+            micImageView.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            textField.rightView = micImageView
+            textField.rightViewMode = .always
         }
     }
     
@@ -215,17 +218,15 @@ extension TodoListViewController: UITableViewDelegate {
                 let activityVC = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
                 self.present(activityVC, animated: true)
             }
-            
-            let toggleTitle = todo.isCompleted ? "Отметить как невыполненную" : "Отметить как выполненную"
-            let toggleAction = UIAction(title: toggleTitle, image: UIImage(systemName: "checkmark.circle")) { _ in
-                self.presenter?.didToggleCompleted(todo)
-            }
-            
+
             let deleteAction = UIAction(title: "Удалить", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.presenter?.didTapDelete(todo)
             }
+
+            let primary = UIMenu(options: .displayInline, children: [editAction, shareAction])
+            let destructive = UIMenu(options: .displayInline, children: [deleteAction])
             
-            return UIMenu(children: [editAction, shareAction, toggleAction, deleteAction])
+            return UIMenu(children: [primary, destructive])
         }
     }
 }

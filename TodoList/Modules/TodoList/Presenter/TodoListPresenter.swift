@@ -30,10 +30,6 @@ extension TodoListPresenter: TodoListViewOutput {
     func didSearch(_ query: String) {
         interactor?.searchTodos(query)
     }
-    
-    func didToggleCompleted(_ todo: Todo) {
-        interactor?.toggleTodoCompletion(todo)
-    }
 }
 
 //MARK: - TodoListInteractorOutput

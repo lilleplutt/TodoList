@@ -29,6 +29,10 @@ extension TodoDetailPresenter: TodoDetailViewOutput {
             interactor?.saveTodo(title: title, description: description)
         }
     }
+    
+    func didTapCancel() {
+        router?.dismiss()
+    }
 }
 
 //MARK: - TodoDetailInteractorOutput

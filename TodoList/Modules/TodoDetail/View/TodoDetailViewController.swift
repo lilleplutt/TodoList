@@ -8,8 +8,9 @@ final class TodoDetailViewController: UIViewController {
     private let titleTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Название задачи"
-        textField.borderStyle = .roundedRect
-        textField.font = .systemFont(ofSize: 16)
+        textField.borderStyle = .none
+        textField.font = .systemFont(ofSize: 28, weight: .bold)
+        textField.textColor = .white
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -17,9 +18,8 @@ final class TodoDetailViewController: UIViewController {
     private let descriptionTextView: UITextView = {
         let textView = UITextView()
         textView.font = .systemFont(ofSize: 16)
-        textView.layer.borderColor = UIColor.systemGray4.cgColor
-        textView.layer.borderWidth = 1
-        textView.layer.cornerRadius = 8
+        textView.textColor = .white
+        textView.backgroundColor = .clear
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
     }()
@@ -27,8 +27,16 @@ final class TodoDetailViewController: UIViewController {
     private let placeholderLabel: UILabel = {
         let label = UILabel()
         label.text = "Описание задачи"
-        label.textColor = .placeholderText
+        label.textColor = .systemGray
         label.font = .systemFont(ofSize: 16)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let dateLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.textColor = .systemGray2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -43,8 +51,9 @@ final class TodoDetailViewController: UIViewController {
     
     // MARK: - Setup
     private func setupUI() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .black
         view.addSubview(titleTextField)
+        view.addSubview(dateLabel)
         view.addSubview(descriptionTextView)
         descriptionTextView.addSubview(placeholderLabel)
         descriptionTextView.delegate = self
@@ -53,12 +62,15 @@ final class TodoDetailViewController: UIViewController {
             titleTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             titleTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            titleTextField.heightAnchor.constraint(equalToConstant: 44),
             
-            descriptionTextView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 16),
+            dateLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 8),
+            dateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            dateLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
+            
+            descriptionTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 24),
             descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            descriptionTextView.heightAnchor.constraint(equalToConstant: 150),
+            descriptionTextView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -16),
             
             placeholderLabel.topAnchor.constraint(equalTo: descriptionTextView.topAnchor, constant: 8),
             placeholderLabel.leadingAnchor.constraint(equalTo: descriptionTextView.leadingAnchor, constant: 8)
@@ -66,16 +78,29 @@ final class TodoDetailViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
+        title = "Задача"
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .save,
+            title: "Сохранить",
+            style: .done,
             target: self,
             action: #selector(didTapSave)
         )
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
+            title: "Назад",
+            style: .plain,
             target: self,
             action: #selector(didTapCancel)
         )
+        
+        if let navigationBar = navigationController?.navigationBar {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .black
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.tintColor = .systemYellow
+        }
     }
     
     // MARK: - Actions
@@ -89,7 +114,7 @@ final class TodoDetailViewController: UIViewController {
     }
     
     @objc private func didTapCancel() {
-        dismiss(animated: true)
+        presenter?.didTapCancel()
     }
 }
 
@@ -97,10 +122,13 @@ final class TodoDetailViewController: UIViewController {
 extension TodoDetailViewController: TodoDetailViewInput {
     
     func showTodo(_ todo: Todo) {
-        title = "Редактировать"
         titleTextField.text = todo.title
         descriptionTextView.text = todo.description
         placeholderLabel.isHidden = !todo.description.isEmpty
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yy"
+        dateLabel.text = formatter.string(from: todo.createdAt)
     }
     
     func showError(_ message: String) {

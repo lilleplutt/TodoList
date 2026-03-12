@@ -24,6 +24,10 @@ final class TodoDetailRouter {
 //MARK: - TodoDetailRouterInput
 extension TodoDetailRouter: TodoDetailRouterInput {
     func dismiss() {
-        view?.dismiss(animated: true)
+        if let navigationController = view?.navigationController {
+            navigationController.popViewController(animated: true)
+        } else {
+            view?.dismiss(animated: true)
+        }
     }
 }

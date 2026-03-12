@@ -13,6 +13,7 @@ protocol TodoListViewOutput: AnyObject {
     func didTapEdit(_ todo: Todo)
     func didTapDelete(_ todo: Todo)
     func didSearch(_ query: String)
+    func didToggleCompleted(_ todo: Todo)
 }
 
 //MARK: - Interactor
@@ -20,6 +21,7 @@ protocol TodoListInteractorInput: AnyObject {
     func fetchTodos()
     func deleteTodo(_ todo: Todo)
     func searchTodos(_ query: String)
+    func toggleTodoCompletion(_ todo: Todo)
 }
 
 protocol TodoListInteractorOutput: AnyObject {

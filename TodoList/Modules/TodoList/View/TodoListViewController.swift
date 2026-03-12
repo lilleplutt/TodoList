@@ -5,15 +5,36 @@ final class TodoListViewController: UIViewController {
     var presenter: TodoListViewOutput?
     
     // MARK: - UI Elements
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Задачи"
+        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     private let tableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         table.separatorStyle = .none
-        table.backgroundColor = .systemBackground
+        table.backgroundColor = .clear
         return table
     }()
     
-    private let searchController = UISearchController(searchResultsController: nil)
+    private let searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.searchBarStyle = .minimal
+        searchBar.placeholder = "Search"
+        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
+            let micImageView = UIImageView(image: UIImage(systemName: "mic.fill"))
+            micImageView.tintColor = .systemGray2
+            textField.rightView = micImageView
+            textField.rightViewMode = .always
+        }
+        return searchBar
+    }()
     
     private let emptyLabel: UILabel = {
         let label = UILabel()
@@ -23,6 +44,31 @@ final class TodoListViewController: UIViewController {
         label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
+    }()
+    
+    private let bottomBarView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let tasksCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 13, weight: .medium)
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let addButton: UIButton = {
+        let button = UIButton(type: .system)
+        let image = UIImage(systemName: "square.and.pencil")
+        button.setImage(image, for: .normal)
+        button.tintColor = .black
+        button.backgroundColor = .systemYellow
+        button.layer.cornerRadius = 22
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     private var todos: [Todo] = []
@@ -43,41 +89,70 @@ final class TodoListViewController: UIViewController {
     
     // MARK: - Setup
     private func setupUI() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .black
+        
+        view.addSubview(titleLabel)
+        view.addSubview(searchBar)
         view.addSubview(tableView)
         view.addSubview(emptyLabel)
+        view.addSubview(bottomBarView)
+        bottomBarView.addSubview(tasksCountLabel)
+        bottomBarView.addSubview(addButton)
+        
+        addButton.addTarget(self, action: #selector(didTapAdd), for: .touchUpInside)
+        searchBar.delegate = self
         
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(TodoCell.self, forCellReuseIdentifier: TodoCell.identifier)
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
+            
+            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            
+            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.bottomAnchor.constraint(equalTo: bottomBarView.topAnchor),
             
             emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
+            bottomBarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bottomBarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bottomBarView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            bottomBarView.heightAnchor.constraint(equalToConstant: 64),
+            
+            tasksCountLabel.centerYAnchor.constraint(equalTo: bottomBarView.centerYAnchor),
+            tasksCountLabel.leadingAnchor.constraint(equalTo: bottomBarView.leadingAnchor, constant: 24),
+            
+            addButton.centerYAnchor.constraint(equalTo: bottomBarView.centerYAnchor),
+            addButton.trailingAnchor.constraint(equalTo: bottomBarView.trailingAnchor, constant: -24),
+            addButton.widthAnchor.constraint(equalToConstant: 44),
+            addButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
     
     private func setupNavigationBar() {
-        title = "Мои задачи"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .add,
-            target: self,
-            action: #selector(didTapAdd)
-        )
+        navigationItem.title = nil
+        
+        if let navigationBar = navigationController?.navigationBar {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .black
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.tintColor = .systemYellow
+        }
     }
     
-    private func setupSearchController() {
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Поиск задач"
-        navigationItem.searchController = searchController
-    }
+    private func setupSearchController() {}
     
     // MARK: - Actions
     @objc private func didTapAdd() {
@@ -91,6 +166,7 @@ extension TodoListViewController: TodoListViewInput {
     func showTodos(_ todos: [Todo]) {
         self.todos = todos
         emptyLabel.isHidden = !todos.isEmpty
+        tasksCountLabel.text = "\(todos.count) задач"
         tableView.reloadData()
     }
     
@@ -122,25 +198,42 @@ extension TodoListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        presenter?.didTapEdit(todos[indexPath.row])
     }
     
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: "Удалить") { [weak self] _, _, completion in
-            guard let self else { return }
-            self.presenter?.didTapDelete(self.todos[indexPath.row])
-            completion(true)
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let todo = todos[indexPath.row]
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            guard let self else { return UIMenu() }
+            
+            let editAction = UIAction(title: "Редактировать", image: UIImage(systemName: "pencil")) { _ in
+                self.presenter?.didTapEdit(todo)
+            }
+            
+            let shareText = todo.description.isEmpty ? todo.title : "\(todo.title)\n\(todo.description)"
+            let shareAction = UIAction(title: "Поделиться", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                let activityVC = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
+                self.present(activityVC, animated: true)
+            }
+            
+            let toggleTitle = todo.isCompleted ? "Отметить как невыполненную" : "Отметить как выполненную"
+            let toggleAction = UIAction(title: toggleTitle, image: UIImage(systemName: "checkmark.circle")) { _ in
+                self.presenter?.didToggleCompleted(todo)
+            }
+            
+            let deleteAction = UIAction(title: "Удалить", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                self.presenter?.didTapDelete(todo)
+            }
+            
+            return UIMenu(children: [editAction, shareAction, toggleAction, deleteAction])
         }
-        return UISwipeActionsConfiguration(actions: [deleteAction])
     }
 }
 
-// MARK: - UISearchResultsUpdating
-extension TodoListViewController: UISearchResultsUpdating {
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        let query = searchController.searchBar.text ?? ""
-        presenter?.didSearch(query)
+// MARK: - UISearchBarDelegate
+extension TodoListViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        presenter?.didSearch(searchText)
     }
 }
 

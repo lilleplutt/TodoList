@@ -10,6 +10,7 @@ protocol TodoDetailViewInput: AnyObject {
 protocol TodoDetailViewOutput: AnyObject {
     func viewDidLoad()
     func didTapSave(title: String, description: String)
+    func didTapCancel()
 }
 
 //MARK: - Interactor

@@ -38,7 +38,7 @@ extension TodoDetailInteractor: TodoDetailInteractorInput {
             updatedTodo.title = title
             updatedTodo.description = description
             
-            self.coreDataManager.updateTodo(todo)
+            self.coreDataManager.updateTodo(updatedTodo)
             
             DispatchQueue.main.async {
                 self.output?.didSaveTodo()

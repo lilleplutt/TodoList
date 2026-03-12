@@ -71,4 +71,23 @@ extension TodoListInteractor: TodoListInteractorInput {
             }
         }
     }
+    
+    func toggleTodoCompletion(_ todo: Todo) {
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let self else { return }
+            
+            var updated = todo
+            updated.isCompleted.toggle()
+            
+            self.coreDataManager.updateTodo(updated)
+            
+            if let index = self.allTodos.firstIndex(where: { $0.id == updated.id }) {
+                self.allTodos[index] = updated
+            }
+            
+            DispatchQueue.main.async {
+                self.output?.didFetchTodos(self.allTodos)
+            }
+        }
+    }
 }

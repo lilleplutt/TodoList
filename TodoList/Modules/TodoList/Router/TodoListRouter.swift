@@ -26,13 +26,11 @@ extension TodoListRouter: TodoListRouterInput {
     
     func showAddTodo() {
         let detailVC = TodoDetailRouter.createModule(nil)
-        detailVC.modalPresentationStyle = .pageSheet
-        view?.present(detailVC, animated: true)
+        view?.navigationController?.pushViewController(detailVC, animated: true)
     }
     
     func showEditTodo(_ todo: Todo) {
         let detailVC = TodoDetailRouter.createModule(todo)
-        detailVC.modalPresentationStyle = .pageSheet
-        view?.present(detailVC, animated: true)
+        view?.navigationController?.pushViewController(detailVC, animated: true)
     }
 }

@@ -7,8 +7,9 @@ final class TodoCell: UITableViewCell {
     // MARK: - UI Elements
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.font = .systemFont(ofSize: 17, weight: .semibold)
         label.numberOfLines = 1
+        label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -16,7 +17,7 @@ final class TodoCell: UITableViewCell {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
-        label.textColor = .secondaryLabel
+        label.textColor = .systemGray2
         label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -25,7 +26,7 @@ final class TodoCell: UITableViewCell {
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 11, weight: .regular)
-        label.textColor = .tertiaryLabel
+        label.textColor = .systemGray3
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -35,6 +36,13 @@ final class TodoCell: UITableViewCell {
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
+    }()
+    
+    private let separatorView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(white: 0.2, alpha: 1.0)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
     
     // MARK: - Init
@@ -49,10 +57,15 @@ final class TodoCell: UITableViewCell {
     
     // MARK: - Setup
     private func setupUI() {
+        backgroundColor = .clear
+        contentView.backgroundColor = .black
+        selectionStyle = .none
+        
         contentView.addSubview(titleLabel)
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(dateLabel)
         contentView.addSubview(checkmarkView)
+        contentView.addSubview(separatorView)
         
         NSLayoutConstraint.activate([
             checkmarkView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -70,7 +83,12 @@ final class TodoCell: UITableViewCell {
             
             dateLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 4),
             dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
+            
+            separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            separatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            separatorView.heightAnchor.constraint(equalToConstant: 0.5)
         ])
     }
     
@@ -85,7 +103,7 @@ final class TodoCell: UITableViewCell {
         
         let imageName = todo.isCompleted ? "checkmark.circle.fill" : "circle"
         checkmarkView.image = UIImage(systemName: imageName)
-        checkmarkView.tintColor = todo.isCompleted ? .systemGreen : .systemGray
+        checkmarkView.tintColor = todo.isCompleted ? .systemYellow : .systemGray2
         
         titleLabel.alpha = todo.isCompleted ? 0.5 : 1.0
     }

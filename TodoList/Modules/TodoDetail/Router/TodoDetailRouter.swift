@@ -4,9 +4,9 @@ final class TodoDetailRouter {
     
     weak var view: UIViewController?
     
-    func createModule() -> UIViewController {
+    static func createModule(_ todo: Todo? = nil) -> UIViewController {
         let view = TodoDetailViewController()
-        let presenter = TodoDetailPresenter()
+        let presenter = TodoDetailPresenter(todo: todo)
         let interactor = TodoDetailInteractor()
         let router = TodoDetailRouter()
         
@@ -27,4 +27,3 @@ extension TodoDetailRouter: TodoDetailRouterInput {
         view?.dismiss(animated: true)
     }
 }
-

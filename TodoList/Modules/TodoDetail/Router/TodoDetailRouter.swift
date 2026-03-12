@@ -17,7 +17,7 @@ final class TodoDetailRouter {
         interactor.output = presenter
         router.view = view
         
-        return views
+        return view
     }
 }
 

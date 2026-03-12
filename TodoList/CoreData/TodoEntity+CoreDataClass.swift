@@ -1,9 +1,6 @@
-public import Foundation
-public import CoreData
-
-public typealias TodoEntityCoreDataClassSet = NSSet
+import Foundation
+import CoreData
 
 @objc(TodoEntity)
 public class TodoEntity: NSManagedObject {
-
 }

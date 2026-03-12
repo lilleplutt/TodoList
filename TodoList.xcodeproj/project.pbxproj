@@ -6,11 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		FDBCE4882F61A9D700A173E9 /* TodoEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBCE4862F61A9D700A173E9 /* TodoEntity+CoreDataClass.swift */; };
-		FDBCE4892F61A9D700A173E9 /* TodoEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBCE4872F61A9D700A173E9 /* TodoEntity+CoreDataProperties.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		FDCCE4892F61554900231A52 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,8 +24,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		FDBCE4862F61A9D700A173E9 /* TodoEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "TodoEntity+CoreDataClass.swift"; path = "TodoList/CoreData/TodoEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
-		FDBCE4872F61A9D700A173E9 /* TodoEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "TodoEntity+CoreDataProperties.swift"; path = "TodoList/CoreData/TodoEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		FDCCE46F2F61554800231A52 /* TodoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDCCE4882F61554900231A52 /* TodoListTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodoListTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDCCE4922F61554900231A52 /* TodoListUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodoListUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -95,8 +88,6 @@
 		FDCCE4662F61554800231A52 = {
 			isa = PBXGroup;
 			children = (
-				FDBCE4862F61A9D700A173E9 /* TodoEntity+CoreDataClass.swift */,
-				FDBCE4872F61A9D700A173E9 /* TodoEntity+CoreDataProperties.swift */,
 				FDCCE4712F61554800231A52 /* TodoList */,
 				FDCCE48B2F61554900231A52 /* TodoListTests */,
 				FDCCE4952F61554900231A52 /* TodoListUITests */,
@@ -258,8 +249,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FDBCE4882F61A9D700A173E9 /* TodoEntity+CoreDataClass.swift in Sources */,
-				FDBCE4892F61A9D700A173E9 /* TodoEntity+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

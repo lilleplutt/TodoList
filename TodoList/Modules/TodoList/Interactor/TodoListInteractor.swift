@@ -54,7 +54,7 @@ extension TodoListInteractor: TodoListInteractorInput {
     
     func searchTodos(_ query: String) {
         DispatchQueue.global(qos: .background).async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             
             if query.isEmpty {
                 DispatchQueue.main.async {

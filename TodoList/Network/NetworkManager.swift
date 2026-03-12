@@ -20,7 +20,7 @@ final class NetworkManager {
                     return
                 }
                 
-                guard let data = data else { return }
+                guard let data else { return }
                 
                 do {
                     let decoder = JSONDecoder()

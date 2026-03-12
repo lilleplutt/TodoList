@@ -3,6 +3,7 @@ import UIKit
 //MARK: - View
 protocol TodoDetailViewInput: AnyObject {
     func showTodo(_ todo: Todo)
+    func showError(_ message: String)
 }
 
 //MARK: - Presenter

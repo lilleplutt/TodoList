@@ -53,11 +53,6 @@
 			path = TodoListTests;
 			sourceTree = "<group>";
 		};
-		FDCCE4952F61554900231A52 /* TodoListUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TodoListUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,7 +85,6 @@
 			children = (
 				FDCCE4712F61554800231A52 /* TodoList */,
 				FDCCE48B2F61554900231A52 /* TodoListTests */,
-				FDCCE4952F61554900231A52 /* TodoListUITests */,
 				FDCCE4702F61554800231A52 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -165,9 +159,6 @@
 			);
 			dependencies = (
 				FDCCE4942F61554900231A52 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				FDCCE4952F61554900231A52 /* TodoListUITests */,
 			);
 			name = TodoListUITests;
 			packageProductDependencies = (

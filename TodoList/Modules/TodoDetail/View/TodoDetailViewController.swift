@@ -9,7 +9,7 @@ final class TodoDetailViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Название задачи"
         textField.borderStyle = .none
-        textField.font = .systemFont(ofSize: 28, weight: .bold)
+        textField.font = .systemFont(ofSize: 32, weight: .bold)
         textField.textColor = .white
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -53,6 +53,11 @@ final class TodoDetailViewController: UIViewController {
         
         presenter?.viewDidLoad()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
     
     // MARK: - Setup
     private func setupUI() {
@@ -64,7 +69,7 @@ final class TodoDetailViewController: UIViewController {
         descriptionTextView.delegate = self
         
         NSLayoutConstraint.activate([
-            titleTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            titleTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
             titleTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
@@ -72,7 +77,7 @@ final class TodoDetailViewController: UIViewController {
             dateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             dateLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
             
-            descriptionTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 24),
+            descriptionTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 16),
             descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             descriptionTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
@@ -83,19 +88,9 @@ final class TodoDetailViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Задача"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "Сохранить",
-            style: .done,
-            target: self,
-            action: #selector(didTapSave)
-        )
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "Назад",
-            style: .plain,
-            target: self,
-            action: #selector(didTapCancel)
-        )
+        title = nil
+        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = makeBackButton()
         
         if let navigationBar = navigationController?.navigationBar {
             let appearance = UINavigationBarAppearance()
@@ -107,9 +102,20 @@ final class TodoDetailViewController: UIViewController {
             navigationBar.tintColor = .systemYellow
         }
     }
+
+    private func makeBackButton() -> UIBarButtonItem {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        button.setTitle(" Назад", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
+        button.tintColor = .systemYellow
+        button.setTitleColor(.systemYellow, for: .normal)
+        button.addTarget(self, action: #selector(didTapBack), for: .touchUpInside)
+        return UIBarButtonItem(customView: button)
+    }
     
     // MARK: - Actions
-    @objc private func didTapSave() {
+    private func saveIfNeeded() {
         guard let title = titleTextField.text, !title.isEmpty else {
             showError("Введите название задачи")
             return
@@ -118,8 +124,8 @@ final class TodoDetailViewController: UIViewController {
         presenter?.didTapSave(title: title, description: description)
     }
     
-    @objc private func didTapCancel() {
-        presenter?.didTapCancel()
+    @objc private func didTapBack() {
+        saveIfNeeded()
     }
     
     @objc private func dismissKeyboard() {

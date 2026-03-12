@@ -8,7 +8,7 @@ final class TodoListViewController: UIViewController {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Задачи"
-        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.font = .systemFont(ofSize: 34, weight: .bold)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -42,6 +42,7 @@ final class TodoListViewController: UIViewController {
     
     private let bottomBarView: UIView = {
         let view = UIView()
+        view.backgroundColor = UIColor(white: 0.12, alpha: 1.0)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -58,9 +59,12 @@ final class TodoListViewController: UIViewController {
         let button = UIButton(type: .system)
         let image = UIImage(systemName: "square.and.pencil")
         button.setImage(image, for: .normal)
-        button.tintColor = .black
-        button.backgroundColor = .systemYellow
-        button.layer.cornerRadius = 22
+        button.tintColor = .systemYellow
+        button.backgroundColor = .clear
+        button.layer.cornerRadius = 6
+        button.layer.borderWidth = 1.5
+        button.layer.borderColor = UIColor.systemYellow.cgColor
+        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -78,6 +82,7 @@ final class TodoListViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         presenter?.viewDidLoad()
     }
     
@@ -99,6 +104,11 @@ final class TodoListViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(TodoCell.self, forCellReuseIdentifier: TodoCell.identifier)
+
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 88
+
+        configureSearchBar()
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
@@ -108,6 +118,7 @@ final class TodoListViewController: UIViewController {
             searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            searchBar.heightAnchor.constraint(equalToConstant: 36),
             
             tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -122,16 +133,16 @@ final class TodoListViewController: UIViewController {
             bottomBarView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             bottomBarView.heightAnchor.constraint(equalToConstant: 64),
             
+            tasksCountLabel.centerXAnchor.constraint(equalTo: bottomBarView.centerXAnchor),
             tasksCountLabel.centerYAnchor.constraint(equalTo: bottomBarView.centerYAnchor),
-            tasksCountLabel.leadingAnchor.constraint(equalTo: bottomBarView.leadingAnchor, constant: 24),
             
             addButton.centerYAnchor.constraint(equalTo: bottomBarView.centerYAnchor),
             addButton.trailingAnchor.constraint(equalTo: bottomBarView.trailingAnchor, constant: -24),
-            addButton.widthAnchor.constraint(equalToConstant: 44),
-            addButton.heightAnchor.constraint(equalToConstant: 44)
+            addButton.widthAnchor.constraint(equalToConstant: 32),
+            addButton.heightAnchor.constraint(equalToConstant: 32)
         ])
     }
-    
+
     private func setupNavigationBar() {
         navigationItem.title = nil
         
@@ -144,18 +155,29 @@ final class TodoListViewController: UIViewController {
             navigationBar.scrollEdgeAppearance = appearance
             navigationBar.tintColor = .systemYellow
         }
-        
-        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
-            let micImageView = UIImageView(image: UIImage(systemName: "mic.fill"))
-            micImageView.tintColor = .systemGray2
-            micImageView.contentMode = .scaleAspectFit
-            micImageView.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-            textField.rightView = micImageView
-            textField.rightViewMode = .always
-        }
     }
     
     private func setupSearchController() {}
+
+    private func configureSearchBar() {
+        searchBar.backgroundImage = UIImage()
+        searchBar.searchTextField.backgroundColor = UIColor(white: 0.18, alpha: 1.0)
+        searchBar.searchTextField.textColor = .white
+        searchBar.searchTextField.leftView?.tintColor = .systemGray2
+        searchBar.searchTextField.layer.cornerRadius = 10
+        searchBar.searchTextField.layer.masksToBounds = true
+        searchBar.searchTextField.attributedPlaceholder = NSAttributedString(
+            string: "Search",
+            attributes: [.foregroundColor: UIColor.systemGray2]
+        )
+
+        let micImageView = UIImageView(image: UIImage(systemName: "mic.fill"))
+        micImageView.tintColor = .systemGray2
+        micImageView.contentMode = .scaleAspectFit
+        micImageView.frame = CGRect(x: 0, y: 0, width: 18, height: 18)
+        searchBar.searchTextField.rightView = micImageView
+        searchBar.searchTextField.rightViewMode = .always
+    }
     
     // MARK: - Actions
     @objc private func didTapAdd() {
@@ -169,7 +191,7 @@ extension TodoListViewController: TodoListViewInput {
     func showTodos(_ todos: [Todo]) {
         self.todos = todos
         emptyLabel.isHidden = !todos.isEmpty
-        tasksCountLabel.text = "\(todos.count) задач"
+        tasksCountLabel.text = "\(todos.count) Задач"
         tableView.reloadData()
     }
     
@@ -191,7 +213,11 @@ extension TodoListViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TodoCell.identifier, for: indexPath) as? TodoCell else {
             return UITableViewCell()
         }
-        cell.configure(with: todos[indexPath.row])
+        let todo = todos[indexPath.row]
+        cell.configure(with: todo)
+        cell.onToggleCompletion = { [weak self] in
+            self?.presenter?.didToggleCompletion(todo)
+        }
         return cell
     }
 }
@@ -201,6 +227,7 @@ extension TodoListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        presenter?.didTapEdit(todos[indexPath.row])
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
@@ -229,6 +256,22 @@ extension TodoListViewController: UITableViewDelegate {
             return UIMenu(children: [primary, destructive])
         }
     }
+    
+    func tableView(_ tableView: UITableView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        animator?.addAnimations {
+            for cell in tableView.visibleCells {
+                cell.alpha = 0.2
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+        animator?.addAnimations {
+            for cell in tableView.visibleCells {
+                cell.alpha = 1.0
+            }
+        }
+    }
 }
 
 // MARK: - UISearchBarDelegate
@@ -237,4 +280,3 @@ extension TodoListViewController: UISearchBarDelegate {
         presenter?.didSearch(searchText)
     }
 }
-

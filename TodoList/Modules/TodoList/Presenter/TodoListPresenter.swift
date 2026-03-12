@@ -27,6 +27,10 @@ extension TodoListPresenter: TodoListViewOutput {
         interactor?.deleteTodo(todo)
     }
     
+    func didToggleCompletion(_ todo: Todo) {
+        interactor?.toggleTodoCompletion(todo)
+    }
+
     func didSearch(_ query: String) {
         interactor?.searchTodos(query)
     }
@@ -43,4 +47,3 @@ extension TodoListPresenter: TodoListInteractorOutput {
         view?.showError(error.localizedDescription)
     }
 }
-

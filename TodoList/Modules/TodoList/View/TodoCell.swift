@@ -7,15 +7,15 @@ final class TodoCell: UITableViewCell {
     // MARK: - UI Elements
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .black
-        view.layer.cornerRadius = 16
+        view.backgroundColor = .clear
+        view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .semibold)
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.numberOfLines = 1
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -25,7 +25,7 @@ final class TodoCell: UITableViewCell {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
-        label.textColor = .systemGray2
+        label.textColor = .systemGray3
         label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -75,6 +75,10 @@ final class TodoCell: UITableViewCell {
         containerView.addSubview(dateLabel)
         containerView.addSubview(checkmarkView)
         contentView.addSubview(separatorView)
+
+        checkmarkView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapCheckmark))
+        checkmarkView.addGestureRecognizer(tap)
         
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
@@ -84,8 +88,8 @@ final class TodoCell: UITableViewCell {
             
             checkmarkView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             checkmarkView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            checkmarkView.widthAnchor.constraint(equalToConstant: 24),
-            checkmarkView.heightAnchor.constraint(equalToConstant: 24),
+            checkmarkView.widthAnchor.constraint(equalToConstant: 22),
+            checkmarkView.heightAnchor.constraint(equalToConstant: 22),
             
             titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 10),
             titleLabel.leadingAnchor.constraint(equalTo: checkmarkView.trailingAnchor, constant: 12),
@@ -108,24 +112,48 @@ final class TodoCell: UITableViewCell {
     
     // MARK: - Configure
     func configure(with todo: Todo) {
-        titleLabel.text = todo.title
+        if todo.isCompleted {
+            let attributes: [NSAttributedString.Key: Any] = [
+                .strikethroughStyle: NSUnderlineStyle.single.rawValue,
+                .foregroundColor: UIColor.systemGray
+            ]
+            titleLabel.attributedText = NSAttributedString(string: todo.title, attributes: attributes)
+        } else {
+            titleLabel.attributedText = NSAttributedString(string: todo.title, attributes: [
+                .foregroundColor: UIColor.white
+            ])
+        }
+
         descriptionLabel.text = todo.description.isEmpty ? "Нет описания" : todo.description
         
         let formatter = DateFormatter()
-        formatter.dateFormat = "dd.MM.yyyy"
+        formatter.dateFormat = "dd/MM/yy"
         dateLabel.text = formatter.string(from: todo.createdAt)
         
         let imageName = todo.isCompleted ? "checkmark.circle" : "circle"
-        checkmarkView.image = UIImage(systemName: imageName)
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+        checkmarkView.image = UIImage(systemName: imageName, withConfiguration: symbolConfig)
         checkmarkView.tintColor = todo.isCompleted ? .systemYellow : .systemGray2
         
-        titleLabel.alpha = todo.isCompleted ? 0.5 : 1.0
+        descriptionLabel.alpha = todo.isCompleted ? 0.5 : 1.0
+        dateLabel.alpha = todo.isCompleted ? 0.5 : 1.0
+    }
+
+    var onToggleCompletion: (() -> Void)?
+
+    @objc private func didTapCheckmark() {
+        onToggleCompletion?()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        onToggleCompletion = nil
     }
     
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
         let changes = {
-            self.containerView.backgroundColor = highlighted ? UIColor(white: 0.15, alpha: 1.0) : .black
+            self.containerView.backgroundColor = highlighted ? UIColor(white: 0.15, alpha: 1.0) : .clear
         }
         animated ? UIView.animate(withDuration: 0.2, animations: changes) : changes()
     }
@@ -133,9 +161,8 @@ final class TodoCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         let changes = {
-            self.containerView.backgroundColor = selected ? UIColor(white: 0.15, alpha: 1.0) : .black
+            self.containerView.backgroundColor = selected ? UIColor(white: 0.15, alpha: 1.0) : .clear
         }
         animated ? UIView.animate(withDuration: 0.2, animations: changes) : changes()
     }
 }
-

@@ -21,14 +21,21 @@ extension TodoListInteractor: TodoListInteractorInput {
             
             if savedTodos.isEmpty {
                 self.networkManager.fetchTodos { result in
-                    switch result {
-                    case .success(let todos):
-                        todos.forEach { self.coreDataManager.saveTodo($0) }
-                        self.allTodos = todos
-                        self.output?.didFetchTodos(todos)
-                        
-                    case .failure(let error):
-                        self.output?.didFailWithError(error)
+                    DispatchQueue.global(qos: .background).async { [weak self] in
+                        guard let self else { return }
+
+                        switch result {
+                        case .success(let todos):
+                            todos.forEach { self.coreDataManager.saveTodo($0) }
+                            self.allTodos = todos
+                            DispatchQueue.main.async {
+                                self.output?.didFetchTodos(todos)
+                            }
+                        case .failure(let error):
+                            DispatchQueue.main.async {
+                                self.output?.didFailWithError(error)
+                            }
+                        }
                     }
                 }
             } else {
@@ -51,6 +58,24 @@ extension TodoListInteractor: TodoListInteractorInput {
             }
         }
     }
+
+    func toggleTodoCompletion(_ todo: Todo) {
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let self else { return }
+
+            var updatedTodo = todo
+            updatedTodo.isCompleted.toggle()
+            self.coreDataManager.updateTodo(updatedTodo)
+
+            if let index = self.allTodos.firstIndex(where: { $0.id == todo.id }) {
+                self.allTodos[index] = updatedTodo
+            }
+
+            DispatchQueue.main.async {
+                self.output?.didFetchTodos(self.allTodos)
+            }
+        }
+    }
     
     func searchTodos(_ query: String) {
         DispatchQueue.global(qos: .background).async { [weak self] in
@@ -63,8 +88,10 @@ extension TodoListInteractor: TodoListInteractorInput {
                 return
             }
             
+            let loweredQuery = query.lowercased()
             let filtered = self.allTodos.filter {
-                $0.title.lowercased().contains(query.lowercased())
+                $0.title.lowercased().contains(loweredQuery) ||
+                $0.description.lowercased().contains(loweredQuery)
             }
             DispatchQueue.main.async {
                 self.output?.didFetchTodos(filtered)

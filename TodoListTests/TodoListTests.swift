@@ -1,10 +1,3 @@
-//
-//  TodoListTests.swift
-//  TodoListTests
-//
-//  Created by Alina on 11/03/2026.
-//
-
 import Testing
 @testable import TodoList
 
@@ -27,6 +20,7 @@ struct TodoListPresenterTests {
         private(set) var fetchTodosCalled = false
         private(set) var deletedTodo: Todo?
         private(set) var lastSearchQuery: String?
+        private(set) var toggledTodo: Todo?
         
         func fetchTodos() {
             fetchTodosCalled = true
@@ -38,6 +32,10 @@ struct TodoListPresenterTests {
         
         func searchTodos(_ query: String) {
             lastSearchQuery = query
+        }
+
+        func toggleTodoCompletion(_ todo: Todo) {
+            toggledTodo = todo
         }
     }
     
@@ -98,6 +96,18 @@ struct TodoListPresenterTests {
         presenter.didTapDelete(todo)
         
         #expect(interactor.deletedTodo?.id == todo.id)
+    }
+
+    @Test
+    func didToggleCompletion_asksInteractorToToggle() {
+        let presenter = TodoListPresenter()
+        let interactor = MockInteractor()
+        presenter.interactor = interactor
+
+        let todo = Todo(id: 3, title: "Toggle", description: "", isCompleted: false, createdAt: Date())
+        presenter.didToggleCompletion(todo)
+
+        #expect(interactor.toggledTodo?.id == todo.id)
     }
     
     @Test

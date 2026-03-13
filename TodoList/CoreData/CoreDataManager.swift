@@ -47,13 +47,20 @@ final class CoreDataManager {
     func saveTodo(_ todo: Todo) {
         let backgroundContext = makeBackgroundContext()
         backgroundContext.performAndWait {
-            let entity = TodoEntity(context: backgroundContext)
-            entity.id = Int64(todo.id)
-            entity.title = todo.title
-            entity.desc = todo.description
-            entity.createdAt = todo.createdAt
-            entity.isCompleted = todo.isCompleted
-            saveContext(backgroundContext)
+            let request = TodoEntity.fetchRequest()
+            request.predicate = NSPredicate(format: "id == %d", todo.id)
+            do {
+                let entities = try backgroundContext.fetch(request)
+                let entity = entities.first ?? TodoEntity(context: backgroundContext)
+                entity.id = Int64(todo.id)
+                entity.title = todo.title
+                entity.desc = todo.description
+                entity.createdAt = todo.createdAt
+                entity.isCompleted = todo.isCompleted
+                saveContext(backgroundContext)
+            } catch {
+                print("Save error: \(error)")
+            }
         }
     }
     

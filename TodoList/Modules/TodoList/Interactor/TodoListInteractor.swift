@@ -8,6 +8,7 @@ final class TodoListInteractor {
     private let networkManager = NetworkManager.shared
     
     private var allTodos: [Todo] = []
+    private var isFetching = false
 }
 
 //MARK: - TodoListInteractorInput
@@ -16,6 +17,8 @@ extension TodoListInteractor: TodoListInteractorInput {
     func fetchTodos() {
         DispatchQueue.global(qos: .background).async { [weak self] in
             guard let self else { return }
+            if self.isFetching { return }
+            self.isFetching = true
             
             let savedTodos = self.coreDataManager.fetchTodos()
             
@@ -36,6 +39,7 @@ extension TodoListInteractor: TodoListInteractorInput {
                                 self.output?.didFailWithError(error)
                             }
                         }
+                        self.isFetching = false
                     }
                 }
             } else {
@@ -43,6 +47,7 @@ extension TodoListInteractor: TodoListInteractorInput {
                 DispatchQueue.main.async {
                     self.output?.didFetchTodos(savedTodos)
                 }
+                self.isFetching = false
             }
         }
     }

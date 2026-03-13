@@ -3,6 +3,7 @@ import UIKit
 final class TodoDetailViewController: UIViewController {
     
     var presenter: TodoDetailViewOutput?
+    private var isEditingTodo = false
     
     // MARK: - UI Elements
     private let titleTextField: UITextField = {
@@ -119,7 +120,11 @@ final class TodoDetailViewController: UIViewController {
     // MARK: - Actions
     private func saveIfNeeded() {
         guard let title = titleTextField.text, !title.isEmpty else {
-            showError("Введите название задачи")
+            if isEditingTodo {
+                showError("Введите название задачи")
+            } else {
+                presenter?.didTapCancel()
+            }
             return
         }
         let description = descriptionTextView.text ?? ""
@@ -139,6 +144,7 @@ final class TodoDetailViewController: UIViewController {
 extension TodoDetailViewController: TodoDetailViewInput {
     
     func showTodo(_ todo: Todo) {
+        isEditingTodo = true
         titleTextField.text = todo.title
         descriptionTextView.text = todo.description
         placeholderLabel.isHidden = !todo.description.isEmpty

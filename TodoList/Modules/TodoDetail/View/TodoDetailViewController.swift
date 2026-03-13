@@ -9,7 +9,7 @@ final class TodoDetailViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Название задачи"
         textField.borderStyle = .none
-        textField.font = .systemFont(ofSize: 32, weight: .bold)
+        textField.font = .systemFont(ofSize: 34, weight: .bold)
         textField.textColor = .white
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -17,7 +17,7 @@ final class TodoDetailViewController: UIViewController {
     
     private let descriptionTextView: UITextView = {
         let textView = UITextView()
-        textView.font = .systemFont(ofSize: 16)
+        textView.font = .systemFont(ofSize: 16, weight: .regular)
         textView.textColor = .white
         textView.backgroundColor = .clear
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -35,7 +35,7 @@ final class TodoDetailViewController: UIViewController {
     
     private let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.font = .systemFont(ofSize: 12, weight: .regular)
         label.textColor = .systemGray2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -67,23 +67,25 @@ final class TodoDetailViewController: UIViewController {
         view.addSubview(descriptionTextView)
         descriptionTextView.addSubview(placeholderLabel)
         descriptionTextView.delegate = self
+        descriptionTextView.textContainerInset = .zero
+        descriptionTextView.textContainer.lineFragmentPadding = 0
         
         NSLayoutConstraint.activate([
-            titleTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
+            titleTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             titleTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            dateLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 8),
+            dateLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 12),
             dateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            dateLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
+            dateLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             descriptionTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 16),
             descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             descriptionTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             
-            placeholderLabel.topAnchor.constraint(equalTo: descriptionTextView.topAnchor, constant: 8),
-            placeholderLabel.leadingAnchor.constraint(equalTo: descriptionTextView.leadingAnchor, constant: 8)
+            placeholderLabel.topAnchor.constraint(equalTo: descriptionTextView.topAnchor),
+            placeholderLabel.leadingAnchor.constraint(equalTo: descriptionTextView.leadingAnchor)
         ])
     }
     

@@ -126,7 +126,7 @@ final class TodoListViewController: UIViewController {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -20),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
             searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),

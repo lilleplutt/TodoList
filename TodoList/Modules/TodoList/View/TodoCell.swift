@@ -86,7 +86,7 @@ final class TodoCell: UITableViewCell {
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            checkmarkView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            checkmarkView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 6),
             checkmarkView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
             checkmarkView.widthAnchor.constraint(equalToConstant: 24),
             checkmarkView.heightAnchor.constraint(equalToConstant: 24),

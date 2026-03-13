@@ -29,6 +29,7 @@ final class TodoListViewController: UIViewController {
         searchBar.placeholder = "Search"
         return searchBar
     }()
+
     
     private let emptyLabel: UILabel = {
         let label = UILabel()
@@ -49,7 +50,7 @@ final class TodoListViewController: UIViewController {
     
     private let tasksCountLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .medium)
+        label.font = .systemFont(ofSize: 11, weight: .regular)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -57,17 +58,15 @@ final class TodoListViewController: UIViewController {
     
     private let addButton: UIButton = {
         let button = UIButton(type: .system)
-        let image = UIImage(systemName: "square.and.pencil")
+        let config = UIImage.SymbolConfiguration(pointSize: 22, weight: .regular)
+        let image = UIImage(systemName: "square.and.pencil", withConfiguration: config)
         button.setImage(image, for: .normal)
         button.tintColor = .systemYellow
         button.backgroundColor = .clear
-        button.layer.cornerRadius = 6
-        button.layer.borderWidth = 1.5
-        button.layer.borderColor = UIColor.systemYellow.cgColor
-        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+
     
     private var todos: [Todo] = []
     
@@ -84,6 +83,20 @@ final class TodoListViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         presenter?.viewDidLoad()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        let textField = searchBar.searchTextField
+        if textField.rightView == nil {
+            let mic = UIImageView(image: UIImage(systemName: "mic.fill"))
+            mic.tintColor = .systemGray2
+            mic.contentMode = .scaleAspectFit
+            mic.frame = CGRect(x: 0, y: 0, width: 18, height: 18)
+            textField.rightView = mic
+            textField.rightViewMode = .always
+        }
     }
     
     // MARK: - Setup
@@ -111,16 +124,16 @@ final class TodoListViewController: UIViewController {
         configureSearchBar()
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -20),
             
-            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
             searchBar.heightAnchor.constraint(equalToConstant: 36),
             
-            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
+            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: bottomBarView.topAnchor),
@@ -130,16 +143,16 @@ final class TodoListViewController: UIViewController {
             
             bottomBarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomBarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomBarView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            bottomBarView.heightAnchor.constraint(equalToConstant: 64),
+            bottomBarView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            bottomBarView.heightAnchor.constraint(equalToConstant: 83),
             
             tasksCountLabel.centerXAnchor.constraint(equalTo: bottomBarView.centerXAnchor),
             tasksCountLabel.centerYAnchor.constraint(equalTo: bottomBarView.centerYAnchor),
             
             addButton.centerYAnchor.constraint(equalTo: bottomBarView.centerYAnchor),
             addButton.trailingAnchor.constraint(equalTo: bottomBarView.trailingAnchor, constant: -24),
-            addButton.widthAnchor.constraint(equalToConstant: 32),
-            addButton.heightAnchor.constraint(equalToConstant: 32)
+            addButton.widthAnchor.constraint(equalToConstant: 44),
+            addButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
 
@@ -161,22 +174,25 @@ final class TodoListViewController: UIViewController {
 
     private func configureSearchBar() {
         searchBar.backgroundImage = UIImage()
-        searchBar.searchTextField.backgroundColor = UIColor(white: 0.18, alpha: 1.0)
-        searchBar.searchTextField.textColor = .white
-        searchBar.searchTextField.leftView?.tintColor = .systemGray2
-        searchBar.searchTextField.layer.cornerRadius = 10
-        searchBar.searchTextField.layer.masksToBounds = true
-        searchBar.searchTextField.attributedPlaceholder = NSAttributedString(
+        let textField = searchBar.searchTextField
+        textField.backgroundColor = UIColor(white: 0.18, alpha: 1.0)
+        textField.textColor = .white
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = 10
+        textField.layer.cornerCurve = .continuous
+        textField.layer.masksToBounds = true
+        textField.leftView?.tintColor = .systemGray2
+        textField.clearButtonMode = .never
+        textField.attributedPlaceholder = NSAttributedString(
             string: "Search",
             attributes: [.foregroundColor: UIColor.systemGray2]
         )
 
-        let micImageView = UIImageView(image: UIImage(systemName: "mic.fill"))
-        micImageView.tintColor = .systemGray2
-        micImageView.contentMode = .scaleAspectFit
-        micImageView.frame = CGRect(x: 0, y: 0, width: 18, height: 18)
-        searchBar.searchTextField.rightView = micImageView
-        searchBar.searchTextField.rightViewMode = .always
+        searchBar.showsBookmarkButton = true
+        let micImage = UIImage(systemName: "mic.fill")?.withRenderingMode(.alwaysTemplate)
+        searchBar.setImage(micImage, for: .bookmark, state: .normal)
+        searchBar.setImage(micImage, for: .bookmark, state: .highlighted)
+        searchBar.tintColor = .systemGray2
     }
     
     // MARK: - Actions

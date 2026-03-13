@@ -76,7 +76,6 @@ final class TodoListViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBar()
-        setupSearchController()
         presenter?.viewDidLoad()
     }
     
@@ -86,20 +85,6 @@ final class TodoListViewController: UIViewController {
         presenter?.viewDidLoad()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        let textField = searchBar.searchTextField
-        if textField.rightView == nil {
-            let mic = UIImageView(image: UIImage(systemName: "mic.fill"))
-            mic.tintColor = .systemGray2
-            mic.contentMode = .scaleAspectFit
-            mic.frame = CGRect(x: 0, y: 0, width: 18, height: 18)
-            textField.rightView = mic
-            textField.rightViewMode = .always
-        }
-    }
-    
     // MARK: - Setup
     private func setupUI() {
         view.backgroundColor = .black
@@ -171,8 +156,6 @@ final class TodoListViewController: UIViewController {
         }
     }
     
-    private func setupSearchController() {}
-
     private func configureSearchBar() {
         searchBar.backgroundImage = UIImage()
         let textField = searchBar.searchTextField

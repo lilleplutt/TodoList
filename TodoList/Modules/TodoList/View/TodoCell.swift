@@ -15,8 +15,8 @@ final class TodoCell: UITableViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.numberOfLines = 1
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.numberOfLines = 2
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -24,8 +24,8 @@ final class TodoCell: UITableViewCell {
     
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
-        label.textColor = .systemGray3
+        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.textColor = .white
         label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -33,7 +33,7 @@ final class TodoCell: UITableViewCell {
     
     private let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 11, weight: .regular)
+        label.font = .systemFont(ofSize: 12, weight: .regular)
         label.textColor = .systemGray3
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -48,7 +48,7 @@ final class TodoCell: UITableViewCell {
     
     private let separatorView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(white: 0.2, alpha: 1.0)
+        view.backgroundColor = UIColor(white: 1.0, alpha: 0.35)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -81,27 +81,27 @@ final class TodoCell: UITableViewCell {
         checkmarkView.addGestureRecognizer(tap)
         
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor),
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            checkmarkView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             checkmarkView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            checkmarkView.widthAnchor.constraint(equalToConstant: 22),
-            checkmarkView.heightAnchor.constraint(equalToConstant: 22),
+            checkmarkView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
+            checkmarkView.widthAnchor.constraint(equalToConstant: 24),
+            checkmarkView.heightAnchor.constraint(equalToConstant: 24),
             
-            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: checkmarkView.trailingAnchor, constant: 12),
+            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
+            titleLabel.leadingAnchor.constraint(equalTo: checkmarkView.trailingAnchor, constant: 8),
             titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
             
-            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
             descriptionLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             descriptionLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
             
-            dateLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 4),
+            dateLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 6),
             dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            dateLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10),
+            dateLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -12),
             
             separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
@@ -112,10 +112,11 @@ final class TodoCell: UITableViewCell {
     
     // MARK: - Configure
     func configure(with todo: Todo) {
+        let lightGray = UIColor(white: 1.0, alpha: 0.6)
         if todo.isCompleted {
             let attributes: [NSAttributedString.Key: Any] = [
                 .strikethroughStyle: NSUnderlineStyle.single.rawValue,
-                .foregroundColor: UIColor.systemGray
+                .foregroundColor: lightGray
             ]
             titleLabel.attributedText = NSAttributedString(string: todo.title, attributes: attributes)
         } else {
@@ -135,8 +136,16 @@ final class TodoCell: UITableViewCell {
         checkmarkView.image = UIImage(systemName: imageName, withConfiguration: symbolConfig)
         checkmarkView.tintColor = todo.isCompleted ? .systemYellow : .systemGray2
         
-        descriptionLabel.alpha = todo.isCompleted ? 0.5 : 1.0
-        dateLabel.alpha = todo.isCompleted ? 0.5 : 1.0
+        if todo.isCompleted {
+            descriptionLabel.textColor = lightGray
+            dateLabel.textColor = lightGray
+        } else {
+            descriptionLabel.textColor = .white
+            dateLabel.textColor = lightGray
+        }
+
+        descriptionLabel.alpha = 1.0
+        dateLabel.alpha = 1.0
     }
 
     var onToggleCompletion: (() -> Void)?

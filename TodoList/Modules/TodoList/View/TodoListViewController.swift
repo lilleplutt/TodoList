@@ -69,6 +69,7 @@ final class TodoListViewController: UIViewController {
 
     
     private var todos: [Todo] = []
+    private var blurView: UIVisualEffectView?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -249,7 +250,10 @@ extension TodoListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let todo = todos[indexPath.row]
         
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+            let previewVC = TodoPreviewViewController(todo: todo)
+            return previewVC
+        }) { [weak self] _ in
             guard let self else { return UIMenu() }
             
             let editAction = UIAction(title: "Редактировать", image: UIImage(systemName: "pencil")) { _ in
@@ -274,18 +278,27 @@ extension TodoListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
-        animator?.addAnimations {
-            for cell in tableView.visibleCells {
-                cell.alpha = 0.2
-            }
+        animator?.addAnimations { [weak self] in
+            guard let self else { return }
+            let blurEffect = UIBlurEffect(style: .systemChromeMaterialDark)
+            let blurView = UIVisualEffectView(effect: blurEffect)
+            blurView.translatesAutoresizingMaskIntoConstraints = false
+            blurView.isUserInteractionEnabled = false
+            self.view.addSubview(blurView)
+            NSLayoutConstraint.activate([
+                blurView.topAnchor.constraint(equalTo: self.view.topAnchor),
+                blurView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                blurView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                blurView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            ])
+            self.blurView = blurView
         }
     }
     
     func tableView(_ tableView: UITableView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
-        animator?.addAnimations {
-            for cell in tableView.visibleCells {
-                cell.alpha = 1.0
-            }
+        animator?.addAnimations { [weak self] in
+            self?.blurView?.removeFromSuperview()
+            self?.blurView = nil
         }
     }
 }

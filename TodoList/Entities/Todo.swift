@@ -1,6 +1,6 @@
 import Foundation
 
-struct Todo: Codable {
+struct Todo {
     let id: Int
     var title: String
     var description: String

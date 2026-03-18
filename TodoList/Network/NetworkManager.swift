@@ -40,11 +40,11 @@ final class NetworkManager {
 }
 
 // MARK: - Response Model
-private struct TodosResponse: Codable {
+private struct TodosResponse: Decodable {
     let todos: [TodoAPI]
 }
 
-struct TodoAPI: Codable {
+struct TodoAPI: Decodable {
     let id: Int
     let todo: String
     let completed: Bool

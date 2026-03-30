@@ -24,9 +24,9 @@ extension TodoDetailPresenter: TodoDetailViewOutput {
     
     func didTapSave(title: String, description: String) {
         if let todo {
-            interactor?.updateTodo(todo: todo, title: title, description: description)
+            Task { await interactor?.updateTodo(todo: todo, title: title, description: description) }
         } else {
-            interactor?.saveTodo(title: title, description: description)
+            Task { await interactor?.saveTodo(title: title, description: description) }
         }
     }
     

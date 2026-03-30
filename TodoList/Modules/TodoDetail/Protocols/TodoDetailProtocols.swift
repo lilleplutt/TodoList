@@ -15,8 +15,8 @@ protocol TodoDetailViewOutput: AnyObject {
 
 //MARK: - Interactor
 protocol TodoDetailInteractorInput: AnyObject {
-    func saveTodo(title: String, description: String)
-    func updateTodo(todo: Todo, title: String, description: String)
+    func saveTodo(title: String, description: String) async
+    func updateTodo(todo: Todo, title: String, description: String) async
 }
 
 protocol TodoDetailInteractorOutput: AnyObject {

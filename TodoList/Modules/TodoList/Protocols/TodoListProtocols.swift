@@ -18,10 +18,10 @@ protocol TodoListViewOutput: AnyObject {
 
 //MARK: - Interactor
 protocol TodoListInteractorInput: AnyObject {
-    func fetchTodos()
-    func deleteTodo(_ todo: Todo)
-    func toggleTodoCompletion(_ todo: Todo)
-    func searchTodos(_ query: String)
+    func fetchTodos() async
+    func deleteTodo(_ todo: Todo) async
+    func toggleTodoCompletion(_ todo: Todo) async
+    func searchTodos(_ query: String) async
 }
 
 protocol TodoListInteractorOutput: AnyObject {

@@ -8,34 +8,22 @@ final class NetworkManager {
     
     private let todosURL = "https://dummyjson.com/todos?limit=30"
     
-    func fetchTodos(completion: @escaping (Result<[Todo], Error>) -> Void) {
-        guard let url = URL(string: todosURL) else { return }
-        
-        DispatchQueue.global(qos: .background).async {
-            URLSession.shared.dataTask(with: url) { data, _, error in
-                if let error = error {
-                    DispatchQueue.main.async {
-                        completion(.failure(error))
-                    }
-                    return
-                }
-                
-                guard let data else { return }
-                
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let response = try decoder.decode(TodosResponse.self, from: data)
-                    DispatchQueue.main.async {
-                        completion(.success(response.todos.map { $0.toDomain() }))
-                    }
-                } catch {
-                    DispatchQueue.main.async {
-                        completion(.failure(error))
-                    }
-                }
-            }.resume()
+    enum NetworkError: Error {
+        case invalidURL
+    }
+    
+    func fetchTodos() async throws -> [Todo] {
+        guard let url = URL(string: todosURL) else {
+            throw NetworkError.invalidURL
         }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let response = try decoder.decode(TodosResponse.self, from: data)
+        
+        return response.todos.map { $0.toDomain() }
     }
 }
 

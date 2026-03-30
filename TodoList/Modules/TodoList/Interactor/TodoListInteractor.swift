@@ -19,17 +19,17 @@ extension TodoListInteractor: TodoListInteractorInput {
         isFetching = true
         defer { isFetching = false }
         
-        let savedTodos = await Task.detached(priority: .background) { [coreDataManager] in
+        let savedTodos = await MainActor.run {
             coreDataManager.fetchTodos()
-        }.value
+        }
         
         if savedTodos.isEmpty {
             do {
                 let todos = try await networkManager.fetchTodos()
                 
-                await Task.detached(priority: .background) { [coreDataManager] in
+                await MainActor.run {
                     todos.forEach { coreDataManager.saveTodo($0) }
-                }.value
+                }
                 
                 self.allTodos = todos
                 await MainActor.run {
@@ -50,9 +50,9 @@ extension TodoListInteractor: TodoListInteractorInput {
     
     
     func deleteTodo(_ todo: Todo) async {
-        await Task.detached(priority: .background) { [coreDataManager] in
+        await MainActor.run {
             coreDataManager.deleteTodo(todo)
-        }.value
+        }
         
         self.allTodos.removeAll { $0.id == todo.id }
         
@@ -65,9 +65,9 @@ extension TodoListInteractor: TodoListInteractorInput {
         var updatedTodo = todo
         updatedTodo.isCompleted.toggle()
         
-        await Task.detached(priority: .background) { [coreDataManager] in
+        await MainActor.run {
             coreDataManager.updateTodo(updatedTodo)
-        }.value
+        }
         
         if let index = self.allTodos.firstIndex(where: { $0.id == todo.id }) {
             self.allTodos[index] = updatedTodo
@@ -79,15 +79,16 @@ extension TodoListInteractor: TodoListInteractorInput {
     }
     
     func searchTodos(_ query: String) async {
-        let result: [Todo] = await Task.detached(priority: .background) {
-            if query.isEmpty { return self.allTodos }
-            
+        let result: [Todo]
+        if query.isEmpty {
+            result = self.allTodos
+        } else {
             let loweredQuery = query.lowercased()
-            return self.allTodos.filter {
+            result = self.allTodos.filter {
                 $0.title.lowercased().contains(loweredQuery) ||
                 $0.description.lowercased().contains(loweredQuery)
             }
-        }.value
+        }
         
         await MainActor.run {
             self.output?.didFetchTodos(result)

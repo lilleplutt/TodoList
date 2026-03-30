@@ -19,9 +19,9 @@ extension TodoDetailInteractor: TodoDetailInteractorInput {
             createdAt: Date()
         )
         
-        await Task.detached(priority: .background) { [coreDataManager] in
+        await MainActor.run {
             coreDataManager.saveTodo(todo)
-        }.value
+        }
         
         await MainActor.run {
             self.output?.didSaveTodo()
@@ -33,9 +33,9 @@ extension TodoDetailInteractor: TodoDetailInteractorInput {
         updatedTodo.title = title
         updatedTodo.description = description
         
-        await Task.detached(priority: .background) { [coreDataManager] in
+        await MainActor.run {
             coreDataManager.updateTodo(updatedTodo)
-        }.value
+        }
         
         await MainActor.run {
             self.output?.didSaveTodo()

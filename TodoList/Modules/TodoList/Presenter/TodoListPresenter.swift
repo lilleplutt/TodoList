@@ -12,7 +12,7 @@ final class TodoListPresenter {
 extension TodoListPresenter: TodoListViewOutput {
     
     func viewDidLoad() {
-        interactor?.fetchTodos()
+        Task { await interactor?.fetchTodos() }
     }
     
     func didTapAddTodo() {
@@ -24,15 +24,15 @@ extension TodoListPresenter: TodoListViewOutput {
     }
     
     func didTapDelete(_ todo: Todo) {
-        interactor?.deleteTodo(todo)
+        Task { await interactor?.deleteTodo(todo) }
     }
     
     func didToggleCompletion(_ todo: Todo) {
-        interactor?.toggleTodoCompletion(todo)
+        Task { await interactor?.toggleTodoCompletion(todo) }
     }
 
     func didSearch(_ query: String) {
-        interactor?.searchTodos(query)
+        Task { await interactor?.searchTodos(query) }
     }
 }
 
